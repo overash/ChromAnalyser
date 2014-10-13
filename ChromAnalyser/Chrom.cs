@@ -93,14 +93,20 @@ namespace WindowsFormsApplication1
 
             foreach (string str in lines)
             {
-                string name_str;
-                string concentration_str;
-                string time_str;
+                string name_str = "";
+                string concentration_str = "";
+                string time_str = "";
 
-                time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
-                name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+",time_str)).Value;
-                concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b",name_str)).Value;
+                try
+                {
+                    time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
+                    name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+", time_str)).Value;
+                    concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b", name_str)).Value;
+                }
+                catch
+                {
 
+                }
                 // Последняя проверка в условии - чтобы имя компонента не состояло из одних цифр 100.000 из конца хроматограммы
                 if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str,@"[\d,\.]").Count != name_str.Length)
                 {
