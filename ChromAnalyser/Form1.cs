@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace WindowsFormsApplication1
 {
+    //Анализатор хроматограмм
     public partial class Form1 : Form
     {
         public Form1()
