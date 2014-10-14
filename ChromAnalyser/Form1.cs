@@ -13,6 +13,7 @@ using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Text.RegularExpressions;
 
+
 namespace WindowsFormsApplication1
 {    
 
@@ -44,7 +45,7 @@ namespace WindowsFormsApplication1
             string path = browseDialog.SelectedPath;
             if (path == "") return;
 
-            string[] files = Directory.GetFiles(path);
+            string[] files = Directory.GetFiles(path, "*.pdf");
             exp = new Experiment("Text");
             
             foreach (string str in files)

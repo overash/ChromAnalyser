@@ -204,6 +204,7 @@ namespace WindowsFormsApplication1
             exApp.DisplayAlerts = false;
             exApp.Workbooks.Add();          
             exWb = exApp.Workbooks.get_Item(1);
+            
             exWs = exWb.Sheets.get_Item(1);
             table = new DataTable();
         }
@@ -233,11 +234,21 @@ namespace WindowsFormsApplication1
             {
                 DataRow rowToAdd = table.NewRow();
                 rowToAdd["Хроматограмма"] = chrom.name;
-                foreach (Component component in chrom.components)
+                /*foreach (Component component in chrom.components)
                 {
                     if (componentsName.Contains(component.name.ToLower()))
                         rowToAdd[component.name] = component.concentration;
+                }*/
+
+                foreach (Component component in chrom.components)
+                {
+                    foreach (string name in componentsName)
+                    {
+                        if (component.name.ToLower() == name.ToLower())
+                            rowToAdd[component.name] = component.concentration;
+                    }
                 }
+               
                 table.Rows.Add(rowToAdd);
             }
 

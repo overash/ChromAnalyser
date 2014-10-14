@@ -36,35 +36,38 @@
   <ItemGroup>
     <Reference Include="IKVM.OpenJDK.Core, Version=0.42.0.6, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PDF box\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="IKVM.OpenJDK.Security">
-      <HintPath>..\..\PDF box\IKVM.OpenJDK.Security.dll</HintPath>
+    <Reference Include="IKVM.OpenJDK.Security, Version=0.42.0.6, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\IKVM.OpenJDK.Security.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.SwingAWT, Version=0.42.0.6, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PDF box\IKVM.OpenJDK.SwingAWT.dll</HintPath>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\IKVM.OpenJDK.SwingAWT.dll</HintPath>
     </Reference>
-    <Reference Include="IKVM.OpenJDK.Util">
-      <HintPath>..\..\PDF box\IKVM.OpenJDK.Util.dll</HintPath>
+    <Reference Include="IKVM.OpenJDK.Util, Version=0.42.0.6, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\IKVM.OpenJDK.Util.dll</HintPath>
     </Reference>
-    <Reference Include="IKVM.Runtime">
-      <HintPath>..\..\PDF box\IKVM.Runtime.dll</HintPath>
+    <Reference Include="IKVM.Runtime, Version=0.42.0.6, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\IKVM.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>bin\Debug\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\Microsoft.Office.Interop.Excel.dll</HintPath>
     </Reference>
     <Reference Include="PDFBox-1.2.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\PDF box\PDFBox-1.2.1.dll</HintPath>
+      <HintPath>Z:\Общее\Автоматизация, работа с мнемосхемами и пр\Программирование разное\ChromAnalyser 2.0\ChromAnalyser\bin\Debug\PDFBox-1.2.1.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
