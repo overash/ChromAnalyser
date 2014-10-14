@@ -20,14 +20,6 @@ namespace WindowsFormsApplication1
     public partial class Form1 : Form
     {
 
-        public static class SerializeAdapter
-        {
-            [Serializable]
-            public class CheckState
-            {
-                Dictionary<int, bool> state;
-            }
-        }
         public Form1()
         {
             InitializeComponent();
@@ -39,6 +31,7 @@ namespace WindowsFormsApplication1
         private void button5_Click(object sender, EventArgs e)
         {
             loadedChroms.Items.Clear();
+            
             MessageBox.Show("Выберите папку с хроматограммами");
             FolderBrowserDialog browseDialog = new FolderBrowserDialog();
             browseDialog.ShowDialog();
@@ -103,6 +96,20 @@ namespace WindowsFormsApplication1
                 loadedChroms.Items.Insert(index + 1, temp);
                 loadedChroms.SetSelected(index + 1, true);
             }
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
+            SerializationAdapter save = new SerializationAdapter(saveFileDialog1.FileName, loadedChroms);
+            save.Serialize();
+        }
+
+        private void btnLoad_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog();
+            SerializationAdapter load = new SerializationAdapter(openFileDialog1.FileName, loadedChroms);
+            load.Deserialize();
         }
     }
 }
