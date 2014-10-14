@@ -14,9 +14,19 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Text.RegularExpressions;
 
 namespace WindowsFormsApplication1
-{
+{    
+
     public partial class Form1 : Form
     {
+
+        public static class SerializeAdapter
+        {
+            [Serializable]
+            public class CheckState
+            {
+                Dictionary<int, bool> state;
+            }
+        }
         public Form1()
         {
             InitializeComponent();
@@ -61,6 +71,37 @@ namespace WindowsFormsApplication1
             ExcelAdapter exAdapter = new ExcelAdapter();
             exAdapter.fillDataTable(exp.Chroms, componentsToReport);
             exAdapter.printDataInExcel();
+        }
+
+        private void btnUp_Click(object sender, EventArgs e)
+        {
+            if (loadedChroms.SelectedItem != null && loadedChroms.SelectedIndex > 0)
+            {
+                Object temp;
+                int index = loadedChroms.SelectedIndex;
+                temp = loadedChroms.SelectedItem;
+                loadedChroms.Items.RemoveAt(index);
+                loadedChroms.Items.Insert(index - 1, temp);
+                loadedChroms.SetSelected(index - 1, true);
+            }
+        }
+
+        private void loadedChroms_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDown_Click(object sender, EventArgs e)
+        {
+            if (loadedChroms.SelectedItem != null && loadedChroms.SelectedIndex < loadedChroms.Items.Count-1)
+            {
+                Object temp;
+                int index = loadedChroms.SelectedIndex;
+                temp = loadedChroms.SelectedItem;
+                loadedChroms.Items.RemoveAt(index);
+                loadedChroms.Items.Insert(index + 1, temp);
+                loadedChroms.SetSelected(index + 1, true);
+            }
         }
     }
 }
