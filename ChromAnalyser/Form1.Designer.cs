@@ -43,6 +43,7 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "Data Files (*.dat)|*.dat";
             // 
             // button5
             // 
@@ -116,13 +117,14 @@
             // 
             // saveFileDialog1
             // 
-            this.saveFileDialog1.DefaultExt = "xml";
+            this.saveFileDialog1.DefaultExt = "dat";
+            this.saveFileDialog1.Filter = "Data Files (*.dat)|*.dat";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 308);
+            this.ClientSize = new System.Drawing.Size(364, 308);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnDown);

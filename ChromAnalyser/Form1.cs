@@ -58,13 +58,16 @@ namespace WindowsFormsApplication1
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> componentsToReport = new List<string>();
-            foreach (object obj in loadedChroms.CheckedItems)
+            if (exp.Chroms != null && exp.Chroms.Count > 0)
             {
-                componentsToReport.Add(obj.ToString());
+                foreach (object obj in loadedChroms.CheckedItems)
+                {
+                    componentsToReport.Add(obj.ToString());
+                }
+                ExcelAdapter exAdapter = new ExcelAdapter();
+                exAdapter.fillDataTable(exp.Chroms, componentsToReport);
+                exAdapter.printDataInExcel();
             }
-            ExcelAdapter exAdapter = new ExcelAdapter();
-            exAdapter.fillDataTable(exp.Chroms, componentsToReport);
-            exAdapter.printDataInExcel();
         }
 
         private void btnUp_Click(object sender, EventArgs e)
@@ -108,8 +111,11 @@ namespace WindowsFormsApplication1
         private void btnLoad_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
-            SerializationAdapter load = new SerializationAdapter(openFileDialog1.FileName, loadedChroms);
-            load.Deserialize();
+            if (File.Exists(openFileDialog1.FileName))
+            {
+                SerializationAdapter load = new SerializationAdapter(openFileDialog1.FileName, loadedChroms);
+                load.Deserialize();
+            }
         }
     }
 }
