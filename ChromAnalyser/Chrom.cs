@@ -14,6 +14,80 @@ using System.Data;
 namespace WindowsFormsApplication1
 {
     public enum chromType { liquid, gas };
+
+    public class fillChromAdapter
+    {
+        string text;
+        public fillChromAdapter(string text)
+        {
+            this.text = text;
+        }
+
+        public Chrom fillChrom(Chrom toWhere)
+        {
+            Chrom chr = new Chrom(toWhere.name);
+            chromType type;
+            if (text.ToLower().Contains("расчет по компонентам")) type = chromType.gas; else type = chromType.liquid;
+            bool memem = text.ToLower().Contains("расчет по компонентам");
+            
+            if (type == chromType.liquid)
+            {
+                List<string> lines = new List<string>();
+                if (text.IndexOf('№') < 0) return null;
+                text = text.Remove(0, text.IndexOf('№'));
+                lines.AddRange(Regex.Split(text, @"\r\n"));
+
+                foreach (string str in lines)
+                {
+                    string name_str = "";
+                    string concentration_str = "";
+                    string time_str = "";
+
+                    
+                    try
+                    {
+                        time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
+                        name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+", time_str)).Value;
+                        concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b", name_str)).Value;
+                    }
+                    catch
+                    {
+
+                    }
+                    // Последняя проверка в условии - чтобы имя компонента не состояло из одних цифр 100.000 из конца хроматограммы
+                    if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str, @"[\d,\.]").Count != name_str.Length)
+                    {
+                        double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
+                        double time = double.Parse(time_str, CultureInfo.InvariantCulture);
+
+                        chr.addComponent(new Component(name_str.ToLower(), concentration, time));
+                    }
+                }
+
+                // NormalizeMe();
+            }
+            else
+            {
+                List<string> lines = new List<string>();
+                int pos = text.ToLower().IndexOf("Расчет хроматограммы".ToLower());
+                if (pos > 0)
+                {
+                    text = text.Remove(0, pos + "Расчет хроматограммы".Length);
+                }
+                else
+                {
+                    pos = text.ToLower().IndexOf("Расчет по компонентам".ToLower());
+                    text = text.Remove(0, pos + "Расчет по компонентам".Length);
+                }
+                
+                lines.AddRange(Regex.Split(text, @"\r\n"));
+            }
+
+
+
+            return chr;
+        }
+    }
     public class Component: IComparable<Component>
     {
         public override string ToString()
@@ -109,47 +183,11 @@ namespace WindowsFormsApplication1
         {
             return addComponent(comp.name, comp.concentration, comp.time);
         }
-        public void Parse(string text)
+      /*  public void Parse(string text)
         {
-            chromType type;
-            if (text.ToLower().Contains("расчет по компонентам")) type = chromType.gas; else type = chromType.liquid;
-
-            if (type == chromType.liquid)
-            {
-                List<string> lines = new List<string>();
-                if (text.IndexOf('№') < 0) return;
-                text = text.Remove(0, text.IndexOf('№'));
-                lines.AddRange(Regex.Split(text, @"\r\n"));
-
-                foreach (string str in lines)
-                {
-                    string name_str = "";
-                    string concentration_str = "";
-                    string time_str = "";
-
-                    try
-                    {
-                        time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
-                        name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+", time_str)).Value;
-                        concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b", name_str)).Value;
-                    }
-                    catch
-                    {
-
-                    }
-                    // Последняя проверка в условии - чтобы имя компонента не состояло из одних цифр 100.000 из конца хроматограммы
-                    if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str, @"[\d,\.]").Count != name_str.Length)
-                    {
-                        double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
-                        double time = double.Parse(time_str, CultureInfo.InvariantCulture);
-
-                        addComponent(new Component(name_str.ToLower(), concentration, time));
-                    }
-                }
-
-                // NormalizeMe();
-            }
-        }
+            fillChromAdapter filler = new fillChromAdapter(text);
+            filler.fillChrom(this);
+        }*/
 
         private void NormalizeMe()
         {
@@ -178,10 +216,12 @@ namespace WindowsFormsApplication1
             PDFTextStripper stripper = new PDFTextStripper();
             string text = stripper.getText(document);
             document.close();
+
+            fillChromAdapter filler = new fillChromAdapter(text);
             
             Chroms.Add(new Chrom(Path.GetFileNameWithoutExtension(path)));
             Chroms[Chroms.Count - 1].onComponentAdded += onComponentAdded;
-            Chroms[Chroms.Count-1].Parse(text);
+            Chroms[Chroms.Count - 1] = filler.fillChrom(Chroms[Chroms.Count - 1]);
             if (onChromAdded!= null) onChromAdded();
         }
         public void AddFeedChromFromFile(string path)
@@ -190,7 +230,8 @@ namespace WindowsFormsApplication1
             PDFTextStripper stripper = new PDFTextStripper();
             string text = stripper.getText(document);
             document.close();
-            feedChrom.Parse(text);
+            fillChromAdapter filler = new fillChromAdapter(text);
+            feedChrom = filler.fillChrom(feedChrom);
         }
         public double CalculateConversion(Chrom chrom)
         {
