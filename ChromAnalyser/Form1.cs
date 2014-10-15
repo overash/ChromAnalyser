@@ -31,7 +31,7 @@ namespace WindowsFormsApplication1
         private void button5_Click(object sender, EventArgs e)
         {
             liquidChromsText.Items.Clear();
-            
+
             MessageBox.Show("Выберите папку с хроматограммами");
             FolderBrowserDialog browseDialog = new FolderBrowserDialog();
             browseDialog.ShowDialog();
@@ -40,7 +40,7 @@ namespace WindowsFormsApplication1
 
             string[] files = Directory.GetFiles(path, "*.pdf");
             exp = new Experiment("Text");
-            
+
             foreach (string str in files)
                 exp.AddChromFromFile(str, null);
 
@@ -50,9 +50,9 @@ namespace WindowsFormsApplication1
                 var names = from n in chrom.components select n.name.ToLower();
                 componentsNames.AddRange(names);
             }
-            liquidChromsText.Items.AddRange(componentsNames.Distinct().ToArray());
 
-            
+            var comps = from n in exp.Chroms select n.components;
+            var d = from n in comps select n;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -117,5 +117,7 @@ namespace WindowsFormsApplication1
                 load.Deserialize();
             }
         }
+
+        
     }
 }

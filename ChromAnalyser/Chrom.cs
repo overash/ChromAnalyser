@@ -13,22 +13,41 @@ using System.Data;
 
 namespace WindowsFormsApplication1
 {
+    public enum chromType { liquid, gas };
     public class Component: IComparable<Component>
     {
+        public override string ToString()
+        {
+            return name;
+        }
+
         public string name { get; set; }
         public double concentration { get; set; }
         public double time { get; set; }
+
+        public chromType type { get; set; }
+        
         public int CompareTo(Component comp)
         {
-            if (this.concentration < comp.concentration) return -1;
-            if (this.concentration > comp.concentration) return 1; else return 0;
+            if (this.name == comp.name) return 0;
+            if (this.name.Length > comp.name.Length) return 1; else return -1;
         }
+        
         public Component(string name, double concentration, double time)
         {
             this.name = name;
             this.concentration = concentration;
             this.time = time;
+            type = chromType.liquid;
         }
+        public Component(string name, double concentration, double time, chromType type)
+        {
+            this.name = name;
+            this.concentration = concentration;
+            this.time = time;
+            this.type = chromType.liquid;
+        }
+
         public Component()
         {
             name = string.Empty;
@@ -40,6 +59,7 @@ namespace WindowsFormsApplication1
             this.name = comp.name;
             this.concentration = comp.concentration;
             this.time = comp.time;
+            this.type = comp.type;
         }
 
         public bool Equals(Component comp)
@@ -52,6 +72,10 @@ namespace WindowsFormsApplication1
 
     public class Chrom
     {
+        public override string ToString()
+        {
+            return name;
+        }
         public string name { get; set; }
         public List<Component> components;
         public event Action onComponentAdded;        
@@ -87,37 +111,43 @@ namespace WindowsFormsApplication1
         }
         public void Parse(string text)
         {
-            List<string> lines = new List<string>();
-            if (text.IndexOf('№') < 0) return;
-            text = text.Remove(0, text.IndexOf('№'));
-            lines.AddRange(Regex.Split(text, @"\r\n"));
+            chromType type;
+            if (text.ToLower().Contains("расчет по компонентам")) type = chromType.gas; else type = chromType.liquid;
 
-            foreach (string str in lines)
+            if (type == chromType.liquid)
             {
-                string name_str = "";
-                string concentration_str = "";
-                string time_str = "";
+                List<string> lines = new List<string>();
+                if (text.IndexOf('№') < 0) return;
+                text = text.Remove(0, text.IndexOf('№'));
+                lines.AddRange(Regex.Split(text, @"\r\n"));
 
-                try
+                foreach (string str in lines)
                 {
-                    time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
-                    name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+", time_str)).Value;
-                    concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b", name_str)).Value;
-                }
-                catch
-                {
+                    string name_str = "";
+                    string concentration_str = "";
+                    string time_str = "";
 
-                }
-                // Последняя проверка в условии - чтобы имя компонента не состояло из одних цифр 100.000 из конца хроматограммы
-                if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str,@"[\d,\.]").Count != name_str.Length)
-                {
-                    double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
-                    double time = double.Parse(time_str, CultureInfo.InvariantCulture);
+                    try
+                    {
+                        time_str = Regex.Match(str, @"\d+\.\d+(?=\s+\w+)").Value;
+                        name_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\S+", time_str)).Value;
+                        concentration_str = Regex.Match(str, String.Format(@"(?<={0}\s+)\b\d+\.\d+\b", name_str)).Value;
+                    }
+                    catch
+                    {
 
-                    addComponent(new Component(name_str, concentration, time));
+                    }
+                    // Последняя проверка в условии - чтобы имя компонента не состояло из одних цифр 100.000 из конца хроматограммы
+                    if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str, @"[\d,\.]").Count != name_str.Length)
+                    {
+                        double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
+                        double time = double.Parse(time_str, CultureInfo.InvariantCulture);
+
+                        addComponent(new Component(name_str.ToLower(), concentration, time));
+                    }
                 }
 
-               // NormalizeMe();
+                // NormalizeMe();
             }
         }
 
