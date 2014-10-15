@@ -31,13 +31,14 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button5 = new System.Windows.Forms.Button();
-            this.loadedChroms = new System.Windows.Forms.CheckedListBox();
+            this.liquidChromsText = new System.Windows.Forms.CheckedListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -55,15 +56,15 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // loadedChroms
+            // liquidChromsText
             // 
-            this.loadedChroms.CheckOnClick = true;
-            this.loadedChroms.FormattingEnabled = true;
-            this.loadedChroms.Location = new System.Drawing.Point(12, 12);
-            this.loadedChroms.Name = "loadedChroms";
-            this.loadedChroms.Size = new System.Drawing.Size(261, 244);
-            this.loadedChroms.TabIndex = 15;
-            this.loadedChroms.SelectedIndexChanged += new System.EventHandler(this.loadedChroms_SelectedIndexChanged);
+            this.liquidChromsText.CheckOnClick = true;
+            this.liquidChromsText.FormattingEnabled = true;
+            this.liquidChromsText.Location = new System.Drawing.Point(12, 12);
+            this.liquidChromsText.Name = "liquidChromsText";
+            this.liquidChromsText.Size = new System.Drawing.Size(261, 244);
+            this.liquidChromsText.TabIndex = 15;
+            this.liquidChromsText.SelectedIndexChanged += new System.EventHandler(this.loadedChroms_SelectedIndexChanged);
             // 
             // button1
             // 
@@ -120,17 +121,27 @@
             this.saveFileDialog1.DefaultExt = "dat";
             this.saveFileDialog1.Filter = "Data Files (*.dat)|*.dat";
             // 
+            // checkedListBox1
+            // 
+            this.checkedListBox1.CheckOnClick = true;
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Location = new System.Drawing.Point(360, 12);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.Size = new System.Drawing.Size(280, 244);
+            this.checkedListBox1.TabIndex = 21;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 308);
+            this.ClientSize = new System.Drawing.Size(652, 308);
+            this.Controls.Add(this.checkedListBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.loadedChroms);
+            this.Controls.Add(this.liquidChromsText);
             this.Controls.Add(this.button5);
             this.Name = "Form1";
             this.Text = "ChromAnalyser";
@@ -143,13 +154,14 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.CheckedListBox loadedChroms;
+        private System.Windows.Forms.CheckedListBox liquidChromsText;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnLoad;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
     }
 }
 
