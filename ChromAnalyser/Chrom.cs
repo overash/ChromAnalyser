@@ -88,6 +88,7 @@ namespace WindowsFormsApplication1
         public void Parse(string text)
         {
             List<string> lines = new List<string>();
+            if (text.IndexOf('№') < 0) return;
             text = text.Remove(0, text.IndexOf('№'));
             lines.AddRange(Regex.Split(text, @"\r\n"));
 
