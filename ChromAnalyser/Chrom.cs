@@ -26,12 +26,14 @@ namespace WindowsFormsApplication1
         public Chrom fillChrom(Chrom toWhere)
         {
             Chrom chr = new Chrom(toWhere.name);
-            chromType type;
-            if (text.ToLower().Contains("расчет по компонентам")) type = chromType.gas; else type = chromType.liquid;
+            chromType type = chromType.gas;
+            if (text.ToLower().Contains("расчет по компонентам") || text.ToLower().Contains("расчет хроматограммы")) type = chromType.gas; else type = chromType.liquid;
             bool memem = text.ToLower().Contains("расчет по компонентам");
+
             
             if (type == chromType.liquid)
             {
+                #region liquid
                 List<string> lines = new List<string>();
                 if (text.IndexOf('№') < 0) return null;
                 text = text.Remove(0, text.IndexOf('№'));
@@ -65,22 +67,70 @@ namespace WindowsFormsApplication1
                 }
 
                 // NormalizeMe();
+                #endregion
             }
+            
             else
             {
                 List<string> lines = new List<string>();
-                int pos = text.ToLower().IndexOf("Расчет хроматограммы".ToLower());
+                int pos = text.ToLower().IndexOf("расчет хроматограммы");
                 if (pos > 0)
                 {
                     text = text.Remove(0, pos + "Расчет хроматограммы".Length);
+                    pos = text.IndexOf("Всего по ДТП-2", StringComparison.OrdinalIgnoreCase);
+                    text = text.Substring(0, pos - 1);
+                    lines.AddRange(Regex.Split(text, @"\r\n").ToArray());
+                    foreach (string str in lines)
+                    {
+                        //" 1,279 водород 94,42522"
+                        string name_str = "";
+                        string concentration_str = "";
+                        string time_str = "";
+
+                        name_str = Regex.Match(str, @"(?<=\d+\,\d+\s+)\S+").Value;
+                        time_str = Regex.Match(str, @"\d+\,\d+(?=\s+\S)").Value;
+                        concentration_str = Regex.Match(str, @"(?<=\w+\s+)\d+\,\d+").Value;
+
+                        time_str = time_str.Replace(',', '.');
+                        concentration_str = concentration_str.Replace(',', '.');
+
+                        if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str, @"[\d,\.]").Count != name_str.Length)
+                        {
+                            double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
+                            double time = double.Parse(time_str, CultureInfo.InvariantCulture);
+
+                            chr.addComponent(new Component(name_str.ToLower(), concentration, time));
+                        }
+                    }
+
                 }
                 else
                 {
-                    pos = text.ToLower().IndexOf("Расчет по компонентам".ToLower());
-                    text = text.Remove(0, pos + "Расчет по компонентам".Length);
+                    string search = " Время, мин Компонент Группа Площадь Высота Площадь, % Концентрация Ед. концентрации Детектор";
+                    pos = text.ToLower().IndexOf(search.ToLower());
+                    text = text.Remove(0, pos + search.Length);
+                    lines.AddRange(Regex.Split(text, @"\r\n").ToArray());
+                    // " 9.448 пропан 4014.656 185.462 14.516 0.549 ДТП-1"
+                    foreach (string str in lines)
+                    {
+                        string name_str = "";
+                        string concentration_str = "";
+                        string time_str = "";
+
+                        name_str = Regex.Match(str, @"(?<=\d+\.\d+\s+)\S+").Value;
+                        time_str = Regex.Match(str, @"\d+\.\d+").Value;
+                        concentration_str = Regex.Match(str, @"\d+\.\d+(?=\s+ДТП)").Value;
+
+                        if (time_str != "" && name_str != "" && concentration_str != "" && Regex.Matches(name_str, @"[\d,\.]").Count != name_str.Length)
+                        {
+                            double concentration = double.Parse(concentration_str, CultureInfo.InvariantCulture);
+                            double time = double.Parse(time_str, CultureInfo.InvariantCulture);
+
+                            chr.addComponent(new Component(name_str.ToLower(), concentration, time));
+                        }
+                    }
                 }
-                
-                lines.AddRange(Regex.Split(text, @"\r\n"));
+
             }
 
 
