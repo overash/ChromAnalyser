@@ -45,14 +45,14 @@ namespace WindowsFormsApplication1
                 exp.AddChromFromFile(str, null);
 
             componentsNames = new List<string>();
-            foreach (Chrom chrom in exp.Chroms)
+            foreach (Chrom chrom in exp.getLiquidChroms())
             {
                 var names = from n in chrom.components select n.name.ToLower();
                 componentsNames.AddRange(names);
             }
 
-            var comps = from n in exp.Chroms select n.components;
-            var d = from n in comps select n;
+            liquidChromsText.Items.AddRange(componentsNames.Distinct().ToArray());
+          
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -64,8 +64,10 @@ namespace WindowsFormsApplication1
                 {
                     componentsToReport.Add(obj.ToString());
                 }
+                
                 ExcelAdapter exAdapter = new ExcelAdapter();
-                exAdapter.fillDataTable(exp.Chroms, componentsToReport);
+                exAdapter.fillDataTableLiquid(exp.getLiquidChroms(), componentsToReport);
+                exAdapter.fillDataTableGas(exp.getGasChroms());
                 exAdapter.printDataInExcel();
             }
         }

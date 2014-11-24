@@ -24,12 +24,11 @@ namespace WindowsFormsApplication1
         }
 
         public Chrom fillChrom(Chrom toWhere)
-        {
-            Chrom chr = new Chrom(toWhere.name);
+        {   
             chromType type = chromType.gas;
             if (text.ToLower().Contains("расчет по компонентам") || text.ToLower().Contains("расчет хроматограммы")) type = chromType.gas; else type = chromType.liquid;
             bool memem = text.ToLower().Contains("расчет по компонентам");
-
+            Chrom chr = new Chrom(toWhere.name, type);
             
             if (type == chromType.liquid)
             {
@@ -193,7 +192,6 @@ namespace WindowsFormsApplication1
             return false;
         }
     }
-
     public class Chrom
     {
         public override string ToString()
@@ -202,18 +200,29 @@ namespace WindowsFormsApplication1
         }
         public string name { get; set; }
         public List<Component> components;
-        public event Action onComponentAdded;        
-        public Chrom(string name, List<Component> components)
+        public event Action onComponentAdded;
+        public chromType _chromType;
+        public Chrom(string name, chromType type, List<Component> components)
         {
             this.name = name;
             this.components = new List<Component>();
             this.components.AddRange(components);
+            this._chromType = type;
         }
+        public Chrom(string name, chromType type)
+        {
+            this.name = name;
+            this.components = new List<Component>();
+            this._chromType = type;
+        }
+
         public Chrom(string name)
         {
             this.name = name;
             this.components = new List<Component>();
+            this._chromType = chromType.liquid;
         }
+
         public Chrom()
         {
             components = new List<Component>();
@@ -310,6 +319,17 @@ namespace WindowsFormsApplication1
             Chroms = new List<Chrom>();
             feedChrom = new Chrom();
         }
+
+        public List<Chrom> getLiquidChroms()
+        {
+            var liquidChroms = from n in Chroms where n._chromType == chromType.liquid select n;
+            return new List<Chrom>(liquidChroms.ToArray());
+        }
+        public List<Chrom> getGasChroms()
+        {
+            var gasChroms = from n in Chroms where n._chromType == chromType.gas select n;
+            return new List<Chrom>(gasChroms.ToArray());
+        }
     }
 
     public class ExcelAdapter : IDisposable
@@ -317,7 +337,7 @@ namespace WindowsFormsApplication1
         private Excel.Application exApp;
         private Excel.Workbook exWb;
         private Excel.Worksheet exWs;
-        private DataTable table;
+        private DataTable tableLiq, tableGas;
         public ExcelAdapter()
         {
             exApp = new Excel.Application();
@@ -328,33 +348,35 @@ namespace WindowsFormsApplication1
             exWb = exApp.Workbooks.get_Item(1);
             
             exWs = exWb.Sheets.get_Item(1);
-            table = new DataTable();
+            tableLiq = new DataTable();
+            tableGas = new DataTable();
         }
 
         private void checkTableForNullReferences()
         {
-            for (int i = 0; i < table.Rows.Count; i++)
+            for (int i = 0; i < tableLiq.Rows.Count; i++)
             {
-                for (int j = 0; j < table.Columns.Count; j++)
+                for (int j = 0; j < tableLiq.Columns.Count; j++)
                 {
-                    if (table.Rows[i][j] == null) table.Rows[i][j] = 0;
+                    if (tableLiq.Rows[i][j] == null) tableLiq.Rows[i][j] = 0;
                 }
             }
         }
-        public void fillDataTable(IEnumerable<Chrom> chroms, IEnumerable<string> componentsName)
-        {
-            table = new DataTable();
-            table.Columns.Add("Хроматограмма");
 
-           /* for (int i = 0; i < componentsName.Count(); i++)
-                componentsName[i] = componentsName[i].ToLower();*/
+        public void fillDataTableLiquid(IEnumerable<Chrom> chroms, IEnumerable<string> componentsName)
+        {
+            tableLiq = new DataTable();
+            tableLiq.Columns.Add("Хроматограмма");
+
+            /* for (int i = 0; i < componentsName.Count(); i++)
+                 componentsName[i] = componentsName[i].ToLower();*/
 
             foreach (string name in componentsName)
-                    table.Columns.Add(name);
-            
+                tableLiq.Columns.Add(name);
+
             foreach (Chrom chrom in chroms)
             {
-                DataRow rowToAdd = table.NewRow();
+                DataRow rowToAdd = tableLiq.NewRow();
                 rowToAdd["Хроматограмма"] = chrom.name;
                 /*foreach (Component component in chrom.components)
                 {
@@ -370,8 +392,47 @@ namespace WindowsFormsApplication1
                             rowToAdd[component.name] = component.concentration;
                     }
                 }
-               
-                table.Rows.Add(rowToAdd);
+
+                tableLiq.Rows.Add(rowToAdd);
+            }
+
+            checkTableForNullReferences();
+        }
+        public void fillDataTableGas(IEnumerable<Chrom> chroms)
+        {
+            List<string> componentsName = new List<string>();
+            componentsName.AddRange(new string[] {"водород","метан", "этан", "этилен", "пропилен", "пропан", "изобутан", "н-бутан", "изопентан", "н-пентан"});
+            foreach (Chrom chr in chroms)
+            {
+                var name = from n in chr.components select n.name.ToLower(); 
+                componentsName.AddRange(name);
+            }
+
+            componentsName = new List<string>(componentsName.Distinct().ToArray());
+
+            tableGas = new DataTable();
+            tableGas.Columns.Add("Хроматограмма");
+
+
+            foreach (string name in componentsName)
+                tableGas.Columns.Add(name);
+
+            foreach (Chrom chrom in chroms)
+            {
+                DataRow rowToAdd = tableGas.NewRow();
+                rowToAdd["Хроматограмма"] = chrom.name;
+              
+
+                foreach (Component component in chrom.components)
+                {
+                    foreach (string name in componentsName)
+                    {
+                        if (component.name.ToLower() == name.ToLower())
+                            rowToAdd[component.name] = component.concentration;
+                    }
+                }
+
+                tableGas.Rows.Add(rowToAdd);
             }
 
             checkTableForNullReferences();
@@ -379,31 +440,59 @@ namespace WindowsFormsApplication1
 
         public void printDataInExcel()
         {
-            for (int i = 0; i < table.Columns.Count; i++)
+            int i = 0, j = 0;
+            #region liquid
+            for ( i = 0; i < tableLiq.Columns.Count; i++)
+                exWs.Cells[1, i + 1] = tableLiq.Columns[i].ColumnName;
+            for ( i = 0; i < tableLiq.Rows.Count; i++)
+                exWs.Cells[i + 2, 1] = tableLiq.Rows[i][0];
+            for ( i = 1; i < tableLiq.Columns.Count; i++)
             {
-                exWs.Cells[1, i + 1] = table.Columns[i].ColumnName;
-            }
-
-            for (int i = 0; i < table.Rows.Count; i++)
-            {
-                exWs.Cells[i + 2, 1] = table.Rows[i][0];
-            }
-
-            for (int i = 1; i < table.Columns.Count; i++)
-            {
-                for (int j = 0; j < table.Rows.Count; j++)
+                for (j = 0; j < tableLiq.Rows.Count; j++)
                 {
                     try
                     {
                         //table.Rows[j][i]
-                        double value = double.Parse(table.Rows[j][i].ToString());
-                        exWs.Cells[j + 2, i + 1].Value = value
- ;
+                        double value = double.Parse(tableLiq.Rows[j][i].ToString());
+                        exWs.Cells[j + 2, i + 1].Value = value;
                     }
-                    catch { }
+                    catch
+                    {
+                        exWs.Cells[j + 2, i + 1].Value = 0;
+                    }
                 }
             }
-           exApp.Visible = true;
+            #endregion
+
+            #region Gas
+            int startRow, startCol;
+            startRow = tableLiq.Rows.Count + 2 ;
+            startCol = tableLiq.Columns.Count + 1;
+
+            for ( i = 0; i < tableGas.Columns.Count; i++)
+                exWs.Cells[startRow, i + 1] = tableGas.Columns[i].ColumnName;
+            for ( i = 0; i < tableGas.Rows.Count; i++)
+                exWs.Cells[i + startRow + 1, 1] = tableGas.Rows[i][0];
+
+            for (i = 1; i < tableGas.Columns.Count; i++)
+            {
+                for (j = 0; j < tableGas.Rows.Count; j++)
+                {
+                    try
+                    {
+                        //table.Rows[j][i]
+                        double value = double.Parse(tableGas.Rows[j][i].ToString());
+                        exWs.Cells[j + startRow + 1, i + 1].Value = value;
+                    }
+                    catch
+                    {
+                        exWs.Cells[j + startRow + 1, i + 1].Value = 0;
+                    }
+                }
+            }
+            #endregion 
+
+            exApp.Visible = true;
         }
         public void Close()
         {
